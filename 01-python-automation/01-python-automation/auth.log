@@ -1,0 +1,9 @@
+Oct 26 09:12:01 server sshd[14221]: Failed password for invalid user admin from 198.51.100.23 port 41232 ssh2
+Oct 26 09:12:03 server sshd[14223]: Failed password for invalid user root from 198.51.100.23 port 41236 ssh2
+Oct 26 09:12:05 server sshd[14225]: Failed password for invalid user test from 198.51.100.23 port 41240 ssh2
+Oct 26 09:12:08 server sshd[14227]: Failed password for invalid user oracle from 198.51.100.23 port 41244 ssh2
+Oct 26 09:12:11 server sshd[14229]: Failed password for invalid user ubuntu from 198.51.100.23 port 41248 ssh2
+Oct 26 09:12:14 server sshd[14231]: Failed password for invalid user git from 198.51.100.23 port 41252 ssh2
+Oct 26 09:15:20 server sshd[14240]: Failed password for guest from 203.0.113.88 port 52110 ssh2
+Oct 26 09:15:24 server sshd[14242]: Failed password for guest from 203.0.113.88 port 52114 ssh2
+Oct 26 09:20:00 server sshd[14250]: Accepted publickey for analyst from 10.0.0.15 port 55432 ssh2
