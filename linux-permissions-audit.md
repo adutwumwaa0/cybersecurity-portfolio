@@ -1,11 +1,11 @@
-# Linux File Permissions & Access Control Audit
+Linux File Permissions & Access Control Audit
 
-## Project Overview
+ Project Overview
 As an entry-level security analyst at a healthcare organization, I performed an audit of the file system permissions on a Linux server. The goal of this project was to inspect the access rights on sensitive files and directories in the `/home/researcher2/projects` folder, identify security risks where files were overly permissive, and apply the Principle of Least Privilege using Linux CLI commands so that unauthorized users cannot read or tamper with critical data.
 
 ---
 
-## Scenario
+ Scenario
 The organization's server contains a project directory used by internal researchers and analysts. An internal audit revealed three primary security concerns:
 1. The `project_k.txt` file contained sensitive research data, but the "other" category had write access.
 2. An archive file named `.project_x.txt` was a hidden file that should not have been accessible to the group or others.
@@ -13,12 +13,12 @@ The organization's server contains a project directory used by internal research
 
 ---
 
-## Investigation & Remediation Steps
+ Investigation & Remediation Steps
 
-### Step 1: Check Current Working Directory
+ Step 1: Check Current Working Directory
 Before making any changes, I checked my current location in the terminal to ensure I was in the proper working path.
 
-```bash
+In the bash,
 pwd
 Command line breakdown:
 pwd: Print Working Directory.
@@ -53,6 +53,7 @@ go-r: Targets both group (g) and other (o), and removes (-) read (r) access.
 .project_x.txt: The hidden file target.
 Verification: ls -la .project_x.txt
 Result: The permission string changed to -rw-------. The owner retains full read and write access, while group members and all other users are completely locked out.
+
 Step 5: Restrict Access to the Drafts Directory
 Finally, I audited the drafts subdirectory. Directories require execute (x) permissions to enter them, but users outside the team should not be able to enter or modify drafts.
 chmod g-w,o-rwx drafts
