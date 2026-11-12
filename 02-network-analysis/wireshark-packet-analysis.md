@@ -55,3 +55,22 @@ Why I ran this code:
 Attackers on the same subnet can use packet sniffers to steal user credentials if traffic is not encrypted. Isolating POST requests allowed me to verify whether sensitive user data was exposed without TLS/HTTPS encryption.
 Step 4: Follow the Complete TCP Stream
 Viewing an isolated packet only provides a single snapshot of data. To view the entire conversation between the client workstation and the web server in human-readable order, I reconstructed the stream.
+Action Taken:
+Right-clicked the HTTP POST packet in the packet list pane and selected Follow TCP Stream.
+What I Observed:
+Wireshark opened a conversation window with color-coded text:
+Red text: Data sent from the client workstation (HTTP headers, user-agent, form variables, and credentials).
+Blue text: Server responses (HTTP status codes, session cookies, and HTML markup).
+Why I ran this code:
+Following the stream allows an analyst to read the entire dialogue as a continuous transcript, verifying what the user submitted and how the web application responded (e.g., whether the authentication succeeded or redirected).
+Step 5: Filter for Outbound DNS Resolution Queries
+When malicious software or users communicate with external domains, the machine must first resolve domain names to IP addresses using DNS. I filtered for outgoing DNS lookup requests.
+dns.flags.response == 0
+Filter Breakdown:
+dns: Filters for Domain Name System traffic (Port 53 UDP/TCP).
+flags.response == 0: Identifies DNS requests (queries) sent by the client. A value of 1 indicates a response returned by a DNS server.
+What I Observed:
+The filtered view listed the exact hostnames queried by the internal machine, including queries to legitimate internal servers and an anomalous lookup request to an external unknown domain.
+Why I ran this code:
+Monitoring outbound DNS queries (response == 0) reveals external domains contacted by internal endpoints, helping analysts detect command-and-control (C2) domains, malicious downloads, or unauthorized external browsing.
+
