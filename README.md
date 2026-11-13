@@ -67,5 +67,5 @@ cybersecurity-portfolio/
 # Contact & Connect
 
 * LinkedIn: Adutwumwaa Frimpong
-* GitHub: 
+* GitHub: https://github.com/adutwumwaa0/cybersecurity-portfolio
 * Email: adutwumwaafrimpong79@gmail.com
