@@ -1,68 +1,90 @@
-Apply Filters to SQL Queries
-Project Description
+## Apply Filters to SQL Queries
+
+## Project Description
 As an entry-level security analyst, I investigated security events and audited device records using Structured Query Language (SQL). The organization experienced potential unauthorized access attempts and required an audit of employee workstation locations for security updates.
 Working with MariaDB databases, I queried the log_in_attempts and employees tables to isolate after-hours logins, examine failed authentications across specific event dates, locate international access, and filter departmental machines using SQL operators (WHERE, AND, OR, NOT, and LIKE).
+
 ## Scenario & Investigation Steps
 1. Retrieve after-hours failed login attempts
 The organization's standard work hours end at 18:00 (6:00 PM). The security team observed suspicious activity occurring in the evening and needed a list of all authentication attempts that failed after this cutoff.
+```
 SELECT * 
 FROM log_in_attempts 
 WHERE login_time > '18:00:00' AND success = FALSE;
-Command Line Breakdown:
-SELECT *: Selects all columns from the table to give full context for each event (e.g., username, IP address, timestamp).
-FROM log_in_attempts: Directs the database to query the user authentication logs table.
-WHERE login_time > '18:00:00': Filters rows to only return events that occurred strictly after 6:00 PM.
-AND success = FALSE: Requires the second condition to also be true, filtering exclusively for rejected/failed attempts.
-Why I ran this code:
+```
+# Command Line Breakdown:
+`SELECT *`: Selects all columns from the table to give full context for each event (e.g., username, IP address, timestamp).
+`FROM log_in_attempts`: Directs the database to query the user authentication logs table.
+`WHERE login_time > '18:00:00'`: Filters rows to only return events that occurred strictly after 6:00 PM.
+`AND success = FALSE`: Requires the second condition to also be true, filtering exclusively for rejected/failed attempts.
+
+# Why I ran this code:
 Failed logins during business hours are often routine user typos. However, repeated failed logins occurring after hours frequently indicate brute-force or password-spraying attacks when security personnel are less likely to monitor in real time.
 
-  Retrieve login attempts on specific dates
+  ## Retrieve login attempts on specific dates
 An incident alert occurred on May 9, 2022. Because attackers often perform reconnaissance or preliminary testing before a major breach attempt, I needed to inspect all login events on May 8 and May 9, 2022.
+```
 SELECT * 
 FROM log_in_attempts 
 WHERE login_date = '2022-05-09' OR login_date = '2022-05-08';
-Command Line Breakdown:
-WHERE login_date = '2022-05-09': Identifies records occurring on the primary incident date.
-OR login_date = '2022-05-08': Extends the filter so attempts from the day prior are also returned.
-Why I ran this code:
+```
+# Command Line Breakdown:
+`WHERE login_date = '2022-05-09'`: Identifies records occurring on the primary incident date.
+`OR login_date = '2022-05-08'`: Extends the filter so attempts from the day prior are also returned.
+
+# Why I ran this code:
 Using the OR operator allowed me to aggregate activity across a 48-hour event window to trace when suspicious logins first started appearing.
 
-  Retrieve login attempts outside of Mexico
+ ##  Retrieve login attempts outside of Mexico
 The organization's main office is located in Mexico (MEX). Management asked for a report of all login activity originating from foreign locations.
-SELECT * 
+```
+SELECT *
 FROM log_in_attempts 
 WHERE NOT country = 'MEX';
-Command Line Breakdown:
-WHERE NOT country = 'MEX': The NOT operator negates the condition, returning every entry where the country code is anything other than MEX.
-Why I ran this code:
+```
+# Command Line Breakdown:
+`WHERE NOT country = 'MEX'`: The NOT operator negates the condition, returning every entry where the country code is anything other than MEX.
+
+#Why I ran this code:
 Any connection originating from outside the home country represents anomalous or foreign traffic that needs to be verified against authorized remote work or business travel records.
-  Filter employees by department using the OR operator
+  
+## Filter employees by department using the OR operator
 The IT and security operations teams scheduled a critical software update for employees working in both the Marketing and Sales departments. I needed to extract the workstation and contact details for these teams.
+```
 SELECT * 
 FROM employees 
 WHERE department = 'Marketing' OR department = 'Sales';
-Command Line Breakdown:
-FROM employees: Switches the query to the employee asset directory table.
-WHERE department = 'Marketing' OR department = 'Sales': Returns every employee who belongs to either the Marketing department or the Sales department.
-Why I ran this code:
+```
+# Command Line Breakdown:
+`FROM employees`: Switches the query to the employee asset directory table.
+`WHERE department = 'Marketing' OR department = 'Sales'`: Returns every employee who belongs to either the Marketing department or the Sales department.
+
+# Why I ran this code:
 The OR operator enables querying multiple non-technical departments at once, ensuring all targeted machines are scheduled for the patch.
-  Filter employees by department and exclude specific offices
+ 
+## Filter employees by department and exclude specific offices
 Finance and Human Resources handle sensitive compliance and payroll information. They also needed security updates, but machines located in building office suite South-109 had already been patched during a prior maintenance run.
+```
 SELECT * 
 FROM employees 
 WHERE (department = 'Finance' OR department = 'Human Resources') AND NOT office LIKE 'South-109%';
-Command Line Breakdown:
-(department = 'Finance' OR department = 'Human Resources'): Parentheses group the departments together first, ensuring SQL treats them as a single logical unit.
-AND NOT office LIKE 'South-109%': Excludes any employee sitting in rooms or suites beginning with South-109.
-LIKE 'South-109%': Uses the percent (%) wildcard character to match any desk or office string starting with South-109 (such as South-109-A or South-109-B).
-Why I ran this code:
+```
+# Command Line Breakdown:
+`(department = 'Finance' OR department = 'Human Resources')`: Parentheses group the departments together first, ensuring SQL treats them as a single logical unit.
+`AND NOT office LIKE 'South-109%'`: Excludes any employee sitting in rooms or suites beginning with South-109.
+`LIKE 'South-109%'`: Uses the percent (%) wildcard character to match any desk or office string starting with South-109 (such as South-109-A or South-109-B).
+
+# Why I ran this code:
 Grouping conditions with parentheses prevents logical errors, and combining AND NOT with LIKE avoided duplicating audit work for rooms that were already verified.
-  Find suspicious logins by IP address pattern matching
+  
+## Find suspicious logins by IP address pattern matching
 Threat intelligence flagged unauthorized port scanning and brute-force logins originating from an external network subnet starting with 198.51.100.
+```
 SELECT * 
 FROM log_in_attempts 
 WHERE ip_address LIKE '198.51.100.%';
+```
 Command Line Breakdown:
-WHERE ip_address LIKE '198.51.100.%': Matches any IP string where the first three octets match 198.51.100., regardless of what numbers appear in the final octet.
+`WHERE ip_address LIKE '198.51.100.%'`: Matches any IP string where the first three octets match 198.51.100., regardless of what numbers appear in the final octet.
 Why I ran this code:
 Attackers rarely attack from a single static IP address; they often rotate through an entire subnet block. The % wildcard captured every attempt across that entire suspect range.
